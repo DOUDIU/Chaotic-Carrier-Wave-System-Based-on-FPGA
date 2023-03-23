@@ -1,54 +1,40 @@
-////////////////////////////////////////////////////////////////////////////////
-// Company  : 
-// Engineer : 
-// -----------------------------------------------------------------------------
-// https://blog.csdn.net/qq_33231534    PHF's CSDN blog
-// -----------------------------------------------------------------------------
-// Create Date    : 2020-09-04 15:16:47
-// Revise Data    : 2020-09-04 15:17:04
-// File Name      : key_filter.v
-// Target Devices : XC7Z015-CLG485-2
-// Tool Versions  : Vivado 2019.2
-// Revision       : V1.1
-// Editor         : sublime text3, tab size (4)
-// Description    : 按键消抖模块
-////////////////////////////////////////////////////////////////////////////////
+
 module key_filter(
-    input                   clk         ,//系统时钟50MHz
-    input                   rst_n       ,//系统复位
-    input                   key_in      ,//按键输入
-    output   reg            key_flag    ,//输出一个脉冲按键有效信号
-    output   reg            key_state    //输出按键状态，1为未按下，0为按下
+    input                   clk         ,
+    input                   rst_n       ,
+    input                   key_in      ,
+    output   reg            key_flag    ,
+    output   reg            key_state    
 );
  
  
-parameter IDLE      = 4'b0001      ;//空闲状态，读取按键按下的下降沿，读取到下降沿转到下一个状态
-parameter FILTER1   = 4'b0010      ;//计数20ms状态，计数结束转到下一个状态
-parameter STABLE    = 4'b0100      ;//数据稳定状态，等待按键松开上升沿，读取到上升沿转到下一个状态
-parameter FILTER2   = 4'b1000      ;//计数20ms状态，计数结束转到空闲状态
+parameter IDLE      = 4'b0001      ;
+parameter FILTER1   = 4'b0010      ;
+parameter STABLE    = 4'b0100      ;
+parameter FILTER2   = 4'b1000      ;
  
 parameter TIME_20MS = 20'd1000_000 ;
  
-reg   [  3: 0]         state_c      ;//寄存器改变状态
-reg   [  3: 0]         state_n      ;//现在状态
+reg   [  3: 0]         state_c      ;
+reg   [  3: 0]         state_n      ;
  
-wire                   IDLE_to_FILTER1  ;//IDLE状态转到FILTER1状态条件
-wire                   FILTER1_to_STABLE;//FILTER1状态转到STABLE状态条件
-wire                   STABLE_to_FILTER2;//STABLE状态转到FILTER2状态条件
-wire                   FILTER2_to_IDLE  ;//FILTER2状态转到IDLE状态条件
+wire                   IDLE_to_FILTER1  ;
+wire                   FILTER1_to_STABLE;
+wire                   STABLE_to_FILTER2;
+wire                   FILTER2_to_IDLE  ;
  
 reg                    key_in_ff0   ;
 reg                    key_in_ff1   ;
 reg                    key_in_ff2   ;
  
-wire                   key_in_pos   ;//检测上升沿标志
-wire                   key_in_neg   ;//检测下降沿标志
+wire                   key_in_pos   ;
+wire                   key_in_neg   ;
  
 reg   [ 19: 0]         cnt          ;
 wire                   add_cnt      ;
 wire                   end_cnt      ;
  
-//状态机第一段，状态转换
+
 always  @(posedge clk or negedge rst_n)begin
     if(rst_n==1'b0)begin
         state_c <= IDLE;
@@ -57,8 +43,7 @@ always  @(posedge clk or negedge rst_n)begin
         state_c <= state_n;
     end
 end
- 
-//状态机第二段，状态转换条件
+
 always  @(*)begin
     case(state_c)
         IDLE   :begin
@@ -89,13 +74,13 @@ always  @(*)begin
     endcase
 end
  
-//状态转换条件
+
 assign IDLE_to_FILTER1   = key_in_neg   ;
 assign FILTER1_to_STABLE = state_c==FILTER1 && end_cnt;
 assign STABLE_to_FILTER2 = key_in_pos   ;
 assign FILTER2_to_IDLE   = state_c==FILTER2 && end_cnt;
  
-//打两拍，防止亚稳态
+
 always  @(posedge clk or negedge rst_n)begin
     if(rst_n==1'b0)begin
         key_in_ff0 <= 1;
@@ -109,11 +94,11 @@ always  @(posedge clk or negedge rst_n)begin
     end
 end
  
-//下降沿和上升沿检测
+
 assign key_in_pos = (state_c==STABLE) ?(key_in_ff1 && !key_in_ff2):1'b0;
 assign key_in_neg = (state_c==IDLE) ?(!key_in_ff1 && key_in_ff2):1'b0;
  
-//计数20ms
+
 always @(posedge clk or negedge rst_n)begin
     if(!rst_n)begin
         cnt <= 0;
@@ -132,7 +117,7 @@ end
 assign add_cnt = state_c==FILTER1 || state_c==FILTER2;       
 assign end_cnt = add_cnt && cnt== TIME_20MS-1;
  
-//key_flag按键按下输出一个脉冲信号
+
 always  @(posedge clk or negedge rst_n)begin
     if(rst_n==1'b0)begin
         key_flag <= 0;
@@ -145,7 +130,7 @@ always  @(posedge clk or negedge rst_n)begin
     end
 end
  
-//key_state按键按下状态信号
+
 always  @(posedge clk or negedge rst_n)begin
     if(rst_n==1'b0)begin
         key_state <= 1;

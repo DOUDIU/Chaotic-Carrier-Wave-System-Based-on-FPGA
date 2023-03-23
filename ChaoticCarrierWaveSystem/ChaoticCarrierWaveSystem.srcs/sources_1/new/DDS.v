@@ -8,6 +8,8 @@ module DDS#(
 	input		[1	: 0]	wave_select	,
 	input		[11	: 0]	p_word		,
 	input		[4	: 0]	amplitude	,
+	input					data_request,
+	output	reg				data_valid	,
 
 	output	reg	[11 : 0]	dac_data	
 );
@@ -43,8 +45,48 @@ module DDS#(
 		if (!rst_n) begin
 			fre_acc <= 0;
 		end
-		else begin
+		else if(data_request)begin
 			fre_acc <= fre_acc + f_word;
+		end
+	end
+
+	
+	reg		data_request_d1;
+	reg		data_request_d2;
+	reg		data_request_d3;
+	
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin
+			data_request_d1		<=	0;
+			data_request_d2		<=	0;
+			data_request_d3		<=	0;
+		end
+		else begin
+			data_request_d1		<=	data_request	;
+			data_request_d2		<=	data_request_d1	;
+			data_request_d3		<=	data_request_d2	;
+		end
+	end
+
+	reg	[9:0]	count_delay;
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin
+			count_delay		<=	0;
+		end
+		else if(count_delay < 10'd1023)begin
+			count_delay		<=	count_delay + 1;
+		end
+	end
+
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin
+			data_valid	<=	0;
+		end
+		else if(data_request_d3 || count_delay == 10'd512) begin
+			data_valid	<=	1;
+		end
+		else begin
+			data_valid  <=	0;
 		end
 	end
 

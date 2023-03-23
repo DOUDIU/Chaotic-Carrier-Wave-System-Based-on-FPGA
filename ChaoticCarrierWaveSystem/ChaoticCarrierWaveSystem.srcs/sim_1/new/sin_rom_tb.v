@@ -1,20 +1,3 @@
-////////////////////////////////////////////////////////////////////////////////
-// Company  : 
-// Engineer : 
-// -----------------------------------------------------------------------------
-// https://blog.csdn.net/qq_33231534    PHF's CSDN blog
-// -----------------------------------------------------------------------------
-// Create Date    : 2020-09-04 19:25:25
-// Revise Data    : 2020-09-04 19:38:59
-// File Name      : sin_rom_tb.v
-// Target Devices : XC7Z015-CLG485-2
-// Tool Versions  : Vivado 2019.2
-// Revision       : V1.1
-// Editor         : sublime text3, tab size (4)
-// Description    : 
-//////////////////////////////////////////////////////////////////////////////// 
-
-
 `timescale 1ns/1ns
 
 module sin_rom_tb (); /* this is automatically generated */

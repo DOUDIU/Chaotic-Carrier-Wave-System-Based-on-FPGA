@@ -9,7 +9,7 @@ module DouLogisticChaoticMapping #(
     output  signed  [19 : 0]    Chaotic_value
 );
 
-reg         [9  : 0]    counter;
+reg         [23 : 0]    counter;
 reg         [19 : 0]    Xn;
 reg         [19 : 0]    Yn;
 reg         [19 : 0]    Xn_o;
@@ -33,7 +33,7 @@ always@(posedge clk or negedge rst_n)begin
         Xn      <=      0 ;
         Yn      <=      0 ;
     end
-    else if(counter == 10'd1023)begin
+    else if(counter == 10'd0)begin
         Xn_o    <=      Xn;
         Yn_o    <=      Yn;
         Xn      <=      u*Xn_o*(255-Xn_o) >> 8;

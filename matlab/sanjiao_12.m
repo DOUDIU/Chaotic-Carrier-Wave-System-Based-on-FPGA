@@ -3,7 +3,7 @@ clear;
 i=-2047:1:2048;
 y=4095*tripuls(i,4095);
 k=dec2bin(y,12);
-fid=fopen('D:\FPGA\FPGA_program\quartus\DDS\rtl\sanjaio_12.txt','wt');
+fid=fopen('..\wave_data\Triangle_12.txt','wt');
 
 for i=1:4096%1024ÐÐ
     for j=1:12%11ÁÐ

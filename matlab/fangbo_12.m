@@ -4,8 +4,7 @@ i=0:2*pi/4095:2*pi;
 y=(square(i)+1)*4095/2;
 plot(i,y);
 k=dec2bin(y,12);
-fid=fopen('D:\FPGA\FPGA_program\quartus\DDS\rtl\fangbo_12.txt','wt');
-
+fid=fopen('..\wave_data\Square_12.txt','wt');
 for i=1:4096%1024ÐÐ
     for j=1:12%11ÁÐ
         fprintf(fid,'%s',k(i,j));%Êä³ö

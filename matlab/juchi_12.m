@@ -3,7 +3,7 @@ clear;
 i=0:1:4095;
 y=i;
 k=dec2bin(y,12);
-fid=fopen('D:\FPGA\FPGA_program\quartus\DDS\rtl\juchi_12.txt','wt');
+fid=fopen('..\wave_data\Saw_Tooth_12.txt','wt');
 
 for i=1:4096%1024ÐÐ
     for j=1:12%11ÁÐ
